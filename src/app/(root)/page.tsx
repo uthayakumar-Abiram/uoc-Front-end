@@ -74,12 +74,14 @@ const Home = () => {
               <p className="mt-2 text-sm">
                 The AskTech team can help you find what you’re after.
               </p>
+              <Link href={"/contact"}>
               <button
                 type="button"
                 className="mt-3 bg-yellow-400 text-black rounded-full px-4 py-2 font-medium hover:bg-yellow-500 transition"
               >
                 Contact AskTech
               </button>
+              </Link>
             </div>
           </div>
         </div>
