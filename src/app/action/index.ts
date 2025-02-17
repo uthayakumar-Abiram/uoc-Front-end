@@ -5,7 +5,96 @@ const backendurl = process.env.NEXT_PUBLIC_BACKEND_URL;
 const cookieStore =  cookies()
 const jwtToken = cookieStore.get("jwt")?.value ?? "";
 
+// Fetch unanswered questions
 
+
+
+export const getAllQuestions = async () => {
+  try {
+    const response = await fetch(`${backendurl}/api/users/questions`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch questions");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error fetching questions:", error);
+    return [];
+  }
+};
+export const fetchAnsweredQuestions = async () => {
+  try {
+    const url = `${backendurl}/api/users/answered`;
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${jwtToken}`,
+      },
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch questions");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error fetching questions:", error);
+    return [];
+  }
+};
+export const fetchUnansweredQuestions = async () => {
+  try {
+   
+    const url = `${backendurl}/api/users/unanswered`;
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization: `Bearer ${jwtToken}`,
+      },
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch questions");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error fetching questions:", error);
+    return [];
+  }
+};
+
+// Answer a question
+export const answerQuestion = async (questionId: string, answer: string) => {
+  try {
+    const url = `${backendurl}/api/users/answer`;
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      method: "PUT",
+      body: JSON.stringify({ questionId, answer }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to answer the question");
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    console.error("Error answering question:", error);
+    return { error: error.message };
+  }
+};
 
 
 export const login = async (email:string,password:string) => {
