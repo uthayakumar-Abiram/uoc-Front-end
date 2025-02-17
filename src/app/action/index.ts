@@ -37,6 +37,7 @@ export const login = async (email:string,password:string) => {
           sameSite: 'lax',
         })
       }
+      
       return data;
     } catch (error:any) {
       console.error("Error login in:", error);
@@ -93,6 +94,35 @@ export const register = async (formData:any) => {
         },
         method: "POST",
         body: JSON.stringify(formData),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+        throw new Error(data.message);
+      }
+  
+      const data = await response.json();
+     
+      return data;
+    } catch (error:any) {
+      console.error("Error login in:", error);
+      return   { error: error.message || "An unknown error occurred" };
+    }
+  };
+
+
+  export const getProfile = async () => {
+    try {
+      const url = `${backendurl}/api/users/profile`;
+      console.log(jwtToken,":");
+      
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`
+        },
+        method: "GET",
       });
   
       if (!response.ok) {

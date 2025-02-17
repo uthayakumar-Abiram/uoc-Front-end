@@ -60,6 +60,10 @@ const Page = (props: Props) => {
           title: "Registration Successful",
         });
         router.push("/");
+        setTimeout(() => {
+          
+          window.location.reload()
+        }, 2000);
       } else {
         toast({
           variant: "destructive",

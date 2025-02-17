@@ -28,10 +28,15 @@ const Page = (props: Props) => {
         try {
           const data = await login(email, password)
           if (data.user) {
+            localStorage.setItem("user",JSON.stringify(data.user));
             toast({
                 title: "Login Success full"
               })
             router.push("/");
+            setTimeout(() => {
+          
+              window.location.reload()
+            }, 2000);
         } else {
             
             //console.log(data.error);

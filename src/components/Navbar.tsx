@@ -1,11 +1,22 @@
-import Image from "next/image"
-import logo from "../../public/logos/uoc-logo.png"
-import Link from "next/link"
+"use client"
+import Image from "next/image";
+import logo from "../../public/logos/uoc-logo.png";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("user"); 
+    if (userToken) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   return (
     <header>
-      {/* Navbar */}
       <nav className="bg-purple-700">
         <div className="container mx-auto px-4 flex items-center justify-between">
           {/* Logo */}
@@ -45,22 +56,27 @@ const Navbar = () => {
           </button>
 
           {/* Links */}
-          <div className="hidden lg:flex space-x-6">
+          <div className="hidden lg:flex space-x-6 items-center">
             <Link href="/" className="text-white hover:text-gray-300">
               Home
             </Link>
             <Link href="/service" className="text-white hover:text-gray-300">
               Services
             </Link>
-            <Link href="/login" className="text-white hover:text-gray-300">
-              Log in
-            </Link>
+            {!isLoggedIn ? (
+              <Link href="/login" className="text-white hover:text-gray-300">
+                Log in
+              </Link>
+            ) : (
+              <Link href="/profile" className="flex items-center space-x-2">
+                <span className="text-white hover:text-gray-300">Profile</span>
+              </Link>
+            )}
           </div>
         </div>
       </nav>
-      {/* Navbar End */}
     </header>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
