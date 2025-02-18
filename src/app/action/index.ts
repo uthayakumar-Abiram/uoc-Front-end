@@ -2,14 +2,15 @@
 import { cookies } from 'next/headers'
 const backendurl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const cookieStore =  cookies()
-const jwtToken = cookieStore.get("jwt")?.value ?? "";
+
 
 // Fetch unanswered questions
 
 
 
 export const getAllQuestions = async () => {
+  const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
   try {
     const response = await fetch(`${backendurl}/api/users/questions`, {
       method: "GET",
@@ -30,6 +31,8 @@ export const getAllQuestions = async () => {
 };
 
 export const likeQuestion = async (questionId:string) => {
+  const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
   try {
     const response = await fetch(`${backendurl}/api/users/like/${questionId}`, {
       method: "POST",
@@ -50,6 +53,8 @@ export const likeQuestion = async (questionId:string) => {
 
 
 export const fetchAnsweredQuestions = async () => {
+  const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
   try {
     const url = `${backendurl}/api/users/answered`;
     const response = await fetch(url, {
@@ -71,6 +76,8 @@ export const fetchAnsweredQuestions = async () => {
   }
 };
 export const fetchUnansweredQuestions = async () => {
+  const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
   try {
    
     const url = `${backendurl}/api/users/unanswered`;
@@ -95,6 +102,8 @@ export const fetchUnansweredQuestions = async () => {
 
 // Answer a question
 export const answerQuestion = async (questionId: string, answer: string) => {
+  const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
   try {
     const url = `${backendurl}/api/users/answer`;
     const response = await fetch(url, {
@@ -193,6 +202,8 @@ export const register = async (formData:any) => {
 
 
   export const contact = async (formData:any) => {
+    const cookieStore =  cookies()
+    const jwtToken = cookieStore.get("jwt")?.value ?? "";
     try {
       const url = `${backendurl}/api/users/contactMessage`;
       console.log(jwtToken,":");
@@ -223,6 +234,8 @@ export const register = async (formData:any) => {
 
 
   export const getProfile = async () => {
+    const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
     try {
       const url = `${backendurl}/api/users/profile`;
       console.log(jwtToken,":");
@@ -253,6 +266,8 @@ export const register = async (formData:any) => {
 
 
   export const postAnnouncement = async (announcementData: any) => {
+    const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
     try {
       const url = `${backendurl}/api/users/announcement`; 
       console.log(jwtToken, ":"); 
@@ -282,6 +297,8 @@ export const register = async (formData:any) => {
   
 
   export const getAnnouncements = async () => {
+    const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? "";
     try {
       const url = `${backendurl}/api/users/announcement`; 
       const response = await fetch(url, {
@@ -306,7 +323,9 @@ export const register = async (formData:any) => {
     }
   };
   
-  export const deleteQuestion = async (id: string) => {    
+  export const deleteQuestion = async (id: string) => {   
+    const cookieStore =  cookies()
+const jwtToken = cookieStore.get("jwt")?.value ?? ""; 
     try {
       console.log(id, "wew", `${backendurl}/api/users/questions/${id}`);
       
@@ -323,8 +342,15 @@ export const register = async (formData:any) => {
       }
 
       return await res.json();
-    } catch (error) {
+    } catch (error:any) {
       console.error(error);
       return { error: error.message };
     }
   };
+
+
+export const signOutforcookie = async () => {  
+  const cookieStore = await cookies()  
+  cookieStore.delete('jwt')
+  return true
+};

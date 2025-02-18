@@ -55,13 +55,14 @@ const AdminDashboard = () => {
       alert(result.error);
     } else {
       alert("Question answered successfully!");
-      setAnswer("");
-      setQuestions((prev) => prev.filter((q) => q._id !== questionId));
+      window.location.reload()
+      // setAnswer("");
+      // setQuestions((prev) => prev.filter((q) => q._id !== questionId));
       // Add the answered question to answered questions
-      setAnsweredQuestions((prev) => [
-        ...prev,
-        { ...result, answer: answer }, // Assuming backend response contains the updated question
-      ]);
+      // setAnsweredQuestions((prev) => [
+      //   ...prev,
+      //   { ...result, answer: answer }, // Assuming backend response contains the updated question
+      // ]);
     }
   };
 

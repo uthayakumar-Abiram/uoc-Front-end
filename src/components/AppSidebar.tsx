@@ -34,6 +34,7 @@ import {
   import { Button } from "./ui/button";
   import Link from "next/link";
   import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
+import { signOutforcookie } from "@/app/action";
   
   const items = [
     { title: "Profile", url: "/profile", icon: User ,public:true},
@@ -61,9 +62,13 @@ import {
     // Disable state for menu items
     const isDisabled = false;
 
-    function signOut(): void {
-      localStorage.removeItem("user");
-      document.cookie = "jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    async function signOut(): Promise<void> {
+      const deleted=await signOutforcookie();
+      if(deleted){
+        
+        localStorage.removeItem("user");
+      }
+      // document.cookie = "jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
       window.location.href = "/login";
     }
 
