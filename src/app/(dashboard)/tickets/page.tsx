@@ -2,10 +2,11 @@
 
 import {
   answerQuestion,
+  deleteQuestion,
   fetchAnsweredQuestions,
   fetchUnansweredQuestions,
 } from "@/app/action";
-import { Heart, User } from "lucide-react";
+import { Heart, Trash2, User } from "lucide-react";
 // import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -31,6 +32,20 @@ const AdminDashboard = () => {
     };
     fetchQuestions();
   }, []);
+
+  const handleDelete = async (questionId: string) => {
+    const confirmed = confirm("Are you sure you want to delete this question?");
+    if (!confirmed) return;
+
+    const result = await deleteQuestion(questionId);
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      alert("Question deleted successfully!");
+      setAnsweredQuestions((prev) => prev.filter((q) => q._id !== questionId));
+    }
+  };
+
 
   const handleAnswer = async (questionId: string) => {
     if (!answer.trim()) return alert("Please enter an answer!");
@@ -110,6 +125,8 @@ const AdminDashboard = () => {
                     <strong>Answer:</strong> {q.answer}
                   </p>
 
+
+
                   {/* Metadata */}
                   <div className="flex items-center gap-4 text-gray-500 text-xs mt-2">
                     <div className="flex items-center gap-1">
@@ -145,6 +162,12 @@ const AdminDashboard = () => {
                       </span>
                     )}
                   </div>
+                  <button
+                    className="mt-3 flex items-center text-red-500 hover:text-red-700"
+                    onClick={() => handleDelete(q._id)}
+                  >
+                    <Trash2 size={16} className="mr-1" /> Delete
+                  </button>
                 </div>
               ))
             ) : (

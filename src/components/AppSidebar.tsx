@@ -160,7 +160,7 @@ import {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Confirm Sign Out</AlertDialogTitle>
                       <AlertDialogDescription>

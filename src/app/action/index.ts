@@ -249,3 +249,82 @@ export const register = async (formData:any) => {
       return   { error: error.message || "An unknown error occurred" };
     }
   };
+
+
+
+  export const postAnnouncement = async (announcementData: any) => {
+    try {
+      const url = `${backendurl}/api/users/announcement`; 
+      console.log(jwtToken, ":"); 
+  
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        method: "POST",
+        body: JSON.stringify(announcementData), 
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data.message); 
+        throw new Error(data.message);
+      }
+  
+      const data = await response.json();
+      return data; 
+    } catch (error: any) {
+      console.error("Error posting announcement:", error);
+      return { error: error.message || "An unknown error occurred" };
+    }
+  };
+  
+
+  export const getAnnouncements = async () => {
+    try {
+      const url = `${backendurl}/api/users/announcement`; 
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        method: "GET",
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+        throw new Error(data.message);
+      }
+  
+      const data = await response.json();
+      return data; 
+    } catch (error: any) {
+      console.error("Error fetching announcements:", error);
+      return { error: error.message || "An unknown error occurred" };
+    }
+  };
+  
+  export const deleteQuestion = async (id: string) => {    
+    try {
+      console.log(id, "wew", `${backendurl}/api/users/questions/${id}`);
+      
+      const res = await fetch(`${backendurl}/api/users/${id}`, {
+        method: "DELETE",
+        headers: {
+          
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to delete question");
+      }
+
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { error: error.message };
+    }
+  };
