@@ -28,6 +28,26 @@ export const getAllQuestions = async () => {
     return [];
   }
 };
+
+export const likeQuestion = async (questionId) => {
+  try {
+    const response = await fetch(`${backendurl}/api/users/like/${questionId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Failed to like question");
+
+    return await response.json(); // Assuming backend sends back updated question
+  } catch (error) {
+    console.error("Error liking question:", error);
+    throw error; // Propagate error for further handling if needed
+  }
+};
+
+
 export const fetchAnsweredQuestions = async () => {
   try {
     const url = `${backendurl}/api/users/answered`;

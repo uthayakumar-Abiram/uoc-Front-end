@@ -37,8 +37,8 @@ import {
   
   const items = [
     { title: "Profile", url: "/profile", icon: User ,public:true},
-    { title: "Announcement", url: "/announcement", icon: Volume2 ,public:true},
-    { title: "Tickets", url: "/tickets", icon: HandCoins ,public:true},
+    // { title: "Announcement", url: "/announcement", icon: Volume2 ,public:true},
+    // { title: "Tickets", url: "/tickets", icon: HandCoins ,public:true},
     // { title: "Conversation", url: "/conversation", icon: MessageSquare },
     // { title: "Group", url: "/group", icon: UsersRound },
     // {
@@ -55,27 +55,24 @@ import {
   ];
   
   export function AppSidebar({ pathSegments }: { pathSegments: string[] }) {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const isAdmin = user.role === "admin"; 
 
-    // const isAdmin = session?.user?.Admin ?? false;
-     //   const isDisabled =
-                //     (!item.public && !isConfigAvailable) || 
-                //     (!isPaid && !item.public) || 
-                //     (item.title === "Plans" && !isConfigAvailable);
-                const isDisabled =false
-  
+    // Disable state for menu items
+    const isDisabled = false;
+
     function signOut(): void {
-      // Remove user data from localStorage
-      localStorage.removeItem('user');
-    
-      // Clear the login cookie
-      document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    
-      // Optionally, redirect the user to the login page
-      window.location.href = '/login';
+      localStorage.removeItem("user");
+      document.cookie = "jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      window.location.href = "/login";
     }
 
     return (
-      <Sidebar className="dark:bg-gray-900" variant="sidebar" collapsible="icon">
+      <Sidebar
+        className="dark:bg-gray-900"
+        variant="sidebar"
+        collapsible="icon"
+      >
         <SidebarContent className="dark:bg-gray-900">
           <SidebarGroup>
             <SidebarGroupLabel className="px-2 py-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -95,60 +92,64 @@ import {
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-  
-                {/* Dynamic Menu Items */}
+
+                {/* Render Admin Menu Items */}
+                {isAdmin && (
+                  <>
+                    <SidebarMenuItem key="announcement">
+                      <SidebarMenuButton asChild>
+                        <a
+                          href="/announcement"
+                          className="flex items-center p-5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                        >
+                          <Volume2 className="mr-2 h-5 w-5 text-gray-600 dark:text-gray-300" />
+                          <span className="text-sm font-medium">
+                            Announcement
+                          </span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem key="tickets">
+                      <SidebarMenuButton asChild>
+                        <a
+                          href="/tickets"
+                          className="flex items-center p-5 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+                        >
+                          <HandCoins className="mr-2 h-5 w-5 text-gray-600 dark:text-gray-300" />
+                          <span className="text-sm font-medium">Tickets</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </>
+                )}
+
+                {/* Render Non-Admin Menu Items */}
                 {items.map((item) => {
                   const isActive = `/${pathSegments[0]}` === item.url;
-                //   const isDisabled =
-                //     (!item.public && !isConfigAvailable) || 
-                //     (!isPaid && !item.public) || 
-                //     (item.title === "Plans" && !isConfigAvailable);
-  
-                  // Render Admin Items
-                //   if (isAdmin && item.admin) {
-                //     return (
-                //       <SidebarMenuItem key={item.title}>
-                //         <SidebarMenuButton asChild>
-                //           <a
-                //             href={item.url}
-                //             className={`flex items-center p-5 rounded-md ${
-                //               isActive
-                //                 ? "bg-muted dark:bg-gray-700 text-primary"
-                //                 : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                //             }`}
-                //           >
-                //             <item.icon className="mr-2 h-5 w-5 text-gray-600 dark:text-gray-300" />
-                //             <span className="text-sm font-medium">{item.title}</span>
-                //           </a>
-                //         </SidebarMenuButton>
-                //       </SidebarMenuItem>
-                //     );
-                //   }
-  
-                  // Render Non-Admin Items
-                //   if (!isAdmin && !item.admin) {
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild disabled={isDisabled}>
-                          <a
-                            href={isDisabled ? "#" : item.url}
-                            className={`flex items-center p-5 rounded-md ${
-                              isActive
-                                ? "bg-muted dark:bg-gray-700 text-primary"
-                                : isDisabled
-                                ? "cursor-not-allowed opacity-50"
-                                : "hover:bg-gray-200 dark:hover:bg-gray-700"
-                            }`}
-                          >
-                            <item.icon className="mr-2 h-5 w-5 text-gray-600 dark:text-gray-300" />
-                            <span className="text-sm font-medium">{item.title}</span>
-                          </a>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                //   }
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild disabled={isDisabled}>
+                        <a
+                          href={isDisabled ? "#" : item.url}
+                          className={`flex items-center p-5 rounded-md ${
+                            isActive
+                              ? "bg-muted dark:bg-gray-700 text-primary"
+                              : isDisabled
+                              ? "cursor-not-allowed opacity-50"
+                              : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                          }`}
+                        >
+                          <item.icon className="mr-2 h-5 w-5 text-gray-600 dark:text-gray-300" />
+                          <span className="text-sm font-medium">
+                            {item.title}
+                          </span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
                 })}
-  
+
                 {/* Sign-Out Menu */}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -163,13 +164,15 @@ import {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Confirm Sign Out</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to sign out? You will need to log in
-                        again to access your account.
+                        Are you sure you want to sign out? You will need to log
+                        in again to access your account.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => signOut()}>Sign Out</AlertDialogAction>
+                      <AlertDialogAction onClick={() => signOut()}>
+                        Sign Out
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -178,12 +181,11 @@ import {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="dark:bg-gray-900">
-          <div className="hidden lg:flex flex-col">
-            {/* <ThemeToggle /> */}
-          </div>
+          <div className="hidden lg:flex flex-col">{/* <ThemeToggle /> */}</div>
         </SidebarFooter>
         <SidebarRail className="border-none" />
       </Sidebar>
     );
   }
+
   

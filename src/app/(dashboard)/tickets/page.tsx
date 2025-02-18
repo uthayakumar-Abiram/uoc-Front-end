@@ -1,29 +1,34 @@
 "use client";
 
-import { answerQuestion, fetchAnsweredQuestions, fetchUnansweredQuestions } from "@/app/action";
-import Link from "next/link";
+import {
+  answerQuestion,
+  fetchAnsweredQuestions,
+  fetchUnansweredQuestions,
+} from "@/app/action";
+import { Heart, User } from "lucide-react";
+// import Link from "next/link";
 import { useState, useEffect } from "react";
 
-
 const AdminDashboard = () => {
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]); // Unanswered questions
+  const [answeredQuestions, setAnsweredQuestions] = useState<any[]>([]); // Answered questions
   const [answer, setAnswer] = useState("");
-   const [Answerdquestions, setAnswerdQuestions] = useState([]);
 
-   useEffect(() => {
-     const getQuestions = async () => {
-       const data = await fetchAnsweredQuestions();
-      setAnswerdQuestions(data);
-     };
-     getQuestions();
-   }, []);
+  // Fetch answered questions
+  useEffect(() => {
+    const getAnsweredQuestions = async () => {
+      const data = await fetchAnsweredQuestions();
+      setAnsweredQuestions(data);
+    };
+    getAnsweredQuestions();
+  }, []);
 
+  // Fetch unanswered questions
   useEffect(() => {
     const fetchQuestions = async () => {
       const data = await fetchUnansweredQuestions();
       setQuestions(data);
     };
-
     fetchQuestions();
   }, []);
 
@@ -37,6 +42,11 @@ const AdminDashboard = () => {
       alert("Question answered successfully!");
       setAnswer("");
       setQuestions((prev) => prev.filter((q) => q._id !== questionId));
+      // Add the answered question to answered questions
+      setAnsweredQuestions((prev) => [
+        ...prev,
+        { ...result, answer: answer }, // Assuming backend response contains the updated question
+      ]);
     }
   };
 
@@ -44,6 +54,7 @@ const AdminDashboard = () => {
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">Admin Dashboard</h2>
       <div className="space-y-4">
+        {/* Unanswered Questions */}
         {questions.length > 0 ? (
           questions.map((question) => (
             <div key={question._id} className="p-4 border rounded-lg shadow">
@@ -72,33 +83,77 @@ const AdminDashboard = () => {
           <p>No unanswered questions available.</p>
         )}
       </div>
+
       <main className="container mx-auto max-w-4xl">
         {/* Answered Questions */}
         <section className="my-6">
           <h2 className="text-xl font-semibold text-purple-700 mb-4 text-center">
             Answered Questions
           </h2>
-          <div className="grid grid-cols-1  gap-6">
-            {Answerdquestions.length > 0 ? (
-              Answerdquestions.map((q, index) => (
+          <div className="space-y-4">
+            {answeredQuestions.length > 0 ? (
+              answeredQuestions.map((q) => (
                 <div
-                  key={index}
-                  className="shadow-md border border-gray-200 rounded-lg p-4 bg-white"
+                  key={q._id}
+                  className="p-4 bg-white shadow-md rounded-lg border border-gray-200"
                 >
-                  <h5 className="text-purple-700 font-semibold mb-2">
+                  {/* Question Title */}
+                  <h3 className="text-lg font-bold text-blue-700 hover:underline cursor-pointer">
                     {q.question}
-                  </h5>
-                  <p className="text-gray-600">{q.answer}</p>
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-gray-600 text-sm mt-1">{q.description}</p>
+
+                  {/* Answer */}
+                  <p className="text-gray-800 text-sm mt-2">
+                    <strong>Answer:</strong> {q.answer}
+                  </p>
+
+                  {/* Metadata */}
+                  <div className="flex items-center gap-4 text-gray-500 text-xs mt-2">
+                    <div className="flex items-center gap-1">
+                      <User size={16} /> {q.userId.lastName}
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Heart size={16} /> {q.votes?.length || 0}
+                    </div>
+                    <span>
+                      {new Date(q.createdAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}{" "}
+                      ago
+                    </span>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {q.tags.length > 0 ? (
+                      q.tags.map((tag, i) => (
+                        <span
+                          key={i}
+                          className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                        General
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-600 text-center col-span-2">
+              <p className="text-gray-600 text-center">
                 No answered questions available.
               </p>
             )}
           </div>
         </section>
-       
       </main>
     </div>
   );
