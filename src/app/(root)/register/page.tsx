@@ -56,6 +56,7 @@ const Page = (props: Props) => {
     try {
       const data = await register(formData);
       if (data.user) {
+        localStorage.setItem("user",JSON.stringify(data.user));
         toast({
           title: "Registration Successful",
         });

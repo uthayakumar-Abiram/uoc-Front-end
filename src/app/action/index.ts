@@ -29,12 +29,13 @@ export const getAllQuestions = async () => {
   }
 };
 
-export const likeQuestion = async (questionId) => {
+export const likeQuestion = async (questionId:string) => {
   try {
     const response = await fetch(`${backendurl}/api/users/like/${questionId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
       },
     });
 
