@@ -45,7 +45,9 @@ const AnnouncementForm = () => {
 
   return (
     <div className="p-4 max-w-lg mx-auto bg-white rounded-2xl shadow">
-      <h2 className="text-xl font-bold mb-4">Post Announcement</h2>
+      <h2 className="text-xl font-bold mb-4 text-purple-700">
+        Post Announcement
+      </h2>
       <Input
         placeholder="Title"
         value={title}

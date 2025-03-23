@@ -78,12 +78,14 @@ const Page = (props: Props) => {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <div className="flex min-h-svh w-full   items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-lg">
         <div className={cn("flex flex-col gap-6")} {...props}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Register</CardTitle>
+              <CardTitle className="text-2xl text-purple-700">
+                Register
+              </CardTitle>
               <CardDescription>
                 Create your account by filling out the form below
               </CardDescription>
@@ -99,7 +101,10 @@ const Page = (props: Props) => {
                       required
                       value={formData.indexNumber}
                       onChange={(e) =>
-                        setFormData({ ...formData, indexNumber: e.target.value })
+                        setFormData({
+                          ...formData,
+                          indexNumber: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -192,9 +197,14 @@ const Page = (props: Props) => {
                     <Label htmlFor="yearOfStudy">Year of Study</Label>
                     <Select
                       value={formData.yearOfStudy}
-                      onValueChange={(value: "1st Year" | "2nd Year" | "3rd Year" | "4th Year" | "Other") =>
-                        setFormData({ ...formData, yearOfStudy: value })
-                      }
+                      onValueChange={(
+                        value:
+                          | "1st Year"
+                          | "2nd Year"
+                          | "3rd Year"
+                          | "4th Year"
+                          | "Other"
+                      ) => setFormData({ ...formData, yearOfStudy: value })}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select Year" />
@@ -209,7 +219,9 @@ const Page = (props: Props) => {
                     </Select>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="departmentOfStudy">Department of Study</Label>
+                    <Label htmlFor="departmentOfStudy">
+                      Department of Study
+                    </Label>
                     <Input
                       id="departmentOfStudy"
                       type="text"
@@ -250,7 +262,7 @@ const Page = (props: Props) => {
                       }
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-500">
                     Register
                   </Button>
                 </div>

@@ -169,8 +169,31 @@ import { Eye, Heart, MessageSquare, User } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { likeQuestion } from "../action";
+import { useRouter } from "next/navigation";
 
 const backendurl = process.env.NEXT_PUBLIC_BACKEND_URL;
+export const fetchAnsweredQuestionsById = async (id: string) => {
+  try {
+    console.log("sss", id);
+    const url = `${backendurl}/api/users/answered/${id}`; // Corrected this line
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch questions");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    return [];
+  }
+};
+
 
 export const fetchAnsweredQuestions = async () => {
   try {
@@ -194,21 +217,36 @@ export const fetchAnsweredQuestions = async () => {
 };
 
 const Home = () => {
+   const router = useRouter();
   const [questions, setQuestions] = useState([]);
   const [likes, setLikes] = useState({});
 
-  useEffect(() => {
-    const getQuestions = async () => {
-      const data = await fetchAnsweredQuestions();
-      setQuestions(data);
-      const initialLikes = {};
-      data.forEach((q) => {
-        initialLikes[q._id] = q.votes.length;
-      });
-      setLikes(initialLikes);
-    };
-    getQuestions();
-  }, []);
+
+  
+
+ useEffect(() => {
+   
+   const user = JSON.parse(localStorage.getItem("user") || "{}");
+   if (!user?._id) {
+     router.push("/login");
+     return;
+   }
+
+   const getQuestions = async () => {
+    //  const data = await fetchAnsweredQuestions();
+        const data = await fetchAnsweredQuestionsById(user?._id);
+     setQuestions(data);
+
+     // Initialize like counts
+     const initialLikes: Record<string, number> = {};
+     data.forEach((q) => {
+       initialLikes[q._id] = q.votes.length;
+     });
+     setLikes(initialLikes);
+   };
+
+   getQuestions();
+ }, [router]);
 
  const handleLike = async (questionId) => {
    try {
@@ -225,22 +263,6 @@ const Home = () => {
 
   return (
     <>
-      <div className="container pb-5 pt-3 max-w-2xl mx-auto">
-        <form className="flex items-center gap-2" role="search">
-          <input
-            className="w-full rounded-full border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <button
-            className="bg-yellow-400 text-black rounded-full px-4 py-2 font-medium hover:bg-yellow-500 transition"
-            type="submit"
-          >
-            Search
-          </button>
-        </form>
-      </div>
 
       <main className="container mx-auto max-w-4xl">
         <section className="my-6">

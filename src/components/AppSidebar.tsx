@@ -175,7 +175,7 @@ import { signOutforcookie } from "@/app/action";
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => signOut()}>
+                      <AlertDialogAction className="bg-red-500 hover:bg-red-600" onClick={() => signOut()}>
                         Sign Out
                       </AlertDialogAction>
                     </AlertDialogFooter>

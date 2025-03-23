@@ -7,15 +7,27 @@ import {
   fetchUnansweredQuestions,
 } from "@/app/action";
 import { Heart, Trash2, User } from "lucide-react";
-// import Link from "next/link";
 import { useState, useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {  useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 const AdminDashboard = () => {
-  const [questions, setQuestions] = useState<any[]>([]); // Unanswered questions
-  const [answeredQuestions, setAnsweredQuestions] = useState<any[]>([]); // Answered questions
-  const [answer, setAnswer] = useState("");
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [answeredQuestions, setAnsweredQuestions] = useState<any[]>([]);
+  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const { toast } = useToast();
 
-  // Fetch answered questions
   useEffect(() => {
     const getAnsweredQuestions = async () => {
       const data = await fetchAnsweredQuestions();
@@ -24,7 +36,6 @@ const AdminDashboard = () => {
     getAnsweredQuestions();
   }, []);
 
-  // Fetch unanswered questions
   useEffect(() => {
     const fetchQuestions = async () => {
       const data = await fetchUnansweredQuestions();
@@ -34,61 +45,86 @@ const AdminDashboard = () => {
   }, []);
 
   const handleDelete = async (questionId: string) => {
-    const confirmed = confirm("Are you sure you want to delete this question?");
-    if (!confirmed) return;
-
     const result = await deleteQuestion(questionId);
+       toast({
+         title: "Question deleted successfully",
+       });
     if (result?.error) {
-      alert(result.error);
+      toast({
+        title: `Question deleted failed ${result.error}`,
+      });
+    
     } else {
-      alert("Question deleted successfully!");
       setAnsweredQuestions((prev) => prev.filter((q) => q._id !== questionId));
     }
   };
 
+ const handleAnswer = async (questionId: string) => {
+   const answer = answers[questionId]?.trim();
+   if (!answer) {
+     toast({
+       variant: "destructive",
+       title: "Error",
+       description: "Please enter an answer before submitting.",
+     });
+     return;
+   }
 
-  const handleAnswer = async (questionId: string) => {
-    if (!answer.trim()) return alert("Please enter an answer!");
+   const result = await answerQuestion(questionId, answer);
+   if (result?.error) {
+     toast({
+       variant: "destructive",
+       title: "Failed to submit answer",
+       description: result.error,
+     });
+   } else {
+     toast({
+       variant: "default",
+       title: "Success",
+       description: "Answer submitted successfully!",
+     });
+    window.location.reload()
+    //  setQuestions((prev) => prev.filter((q) => q._id !== questionId));
+    //  setAnsweredQuestions((prev) => [...prev, { ...result, answer }]);
+    //  setAnswers((prev) => ({ ...prev, [questionId]: "" }));
 
-    const result = await answerQuestion(questionId, answer);
-    if (result?.error) {
-      alert(result.error);
-    } else {
-      alert("Question answered successfully!");
-      window.location.reload()
-      // setAnswer("");
-      // setQuestions((prev) => prev.filter((q) => q._id !== questionId));
-      // Add the answered question to answered questions
-      // setAnsweredQuestions((prev) => [
-      //   ...prev,
-      //   { ...result, answer: answer }, // Assuming backend response contains the updated question
-      // ]);
-    }
-  };
+    
+   }
+ };
+
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Admin Dashboard</h2>
-      <div className="space-y-4">
-        {/* Unanswered Questions */}
+    <div className="p-4 space-y-6 mx-auto container">
+      {/* Unanswered Questions */}
+      <section>
+        <h2 className="text-xl font-semibold mb-4 text-purple-700 ">
+          Unanswered Questions
+        </h2>
         {questions.length > 0 ? (
           questions.map((question) => (
-            <div key={question._id} className="p-4 border rounded-lg shadow">
+            <div
+              key={question._id}
+              className="p-4 border rounded-lg shadow space-y-2"
+            >
               <p>
                 <strong>Question:</strong> {question.question}
               </p>
               <p>
                 <strong>Description:</strong> {question.description}
               </p>
-              <input
-                type="text"
+              <Textarea
                 className="border p-2 rounded w-full my-2"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
+                value={answers[question._id] || ""}
+                onChange={(e) =>
+                  setAnswers((prev) => ({
+                    ...prev,
+                    [question._id]: e.target.value,
+                  }))
+                }
                 placeholder="Write your answer here"
               />
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className=" text-white px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-500"
                 onClick={() => handleAnswer(question._id)}
               >
                 Answer
@@ -98,87 +134,103 @@ const AdminDashboard = () => {
         ) : (
           <p>No unanswered questions available.</p>
         )}
-      </div>
+      </section>
 
-      <main className="container mx-auto max-w-4xl">
-        {/* Answered Questions */}
-        <section className="my-6">
-          <h2 className="text-xl font-semibold text-purple-700 mb-4 text-center">
-            Answered Questions
-          </h2>
-          <div className="space-y-4">
-            {answeredQuestions.length > 0 ? (
-              answeredQuestions.map((q) => (
-                <div
-                  key={q._id}
-                  className="p-4 bg-white shadow-md rounded-lg border border-gray-200"
-                >
-                  {/* Question Title */}
-                  <h3 className="text-lg font-bold text-blue-700 hover:underline cursor-pointer">
-                    {q.question}
-                  </h3>
+      {/* Answered Questions */}
+      <section>
+        <h2 className="text-xl font-semibold text-purple-700 mb-4">
+          Answered Questions
+        </h2>
+        {answeredQuestions.length > 0 ? (
+          answeredQuestions.map((q) => (
+            <>
+              <div
+                key={q._id}
+                className="p-4  bg-white shadow-md rounded-lg border space-y-6"
+              >
+                {/* Render question */}
+                <h3 className="text-lg font-bold text-blue-700 hover:underline cursor-pointer">
+                  {q.question}
+                </h3>
 
-                  {/* Description */}
-                  <p className="text-gray-600 text-sm mt-1">{q.description}</p>
+                {/* Render description */}
+                <p className="text-gray-600 text-sm">{q.description}</p>
 
-                  {/* Answer */}
-                  <p className="text-gray-800 text-sm mt-2">
-                    <strong>Answer:</strong> {q.answer}
-                  </p>
+                {/* Render answer */}
+                <p className="text-gray-800 text-sm">
+                  <strong>Answer:</strong> {q.answer || "No answer provided"}
+                </p>
 
-
-
-                  {/* Metadata */}
-                  <div className="flex items-center gap-4 text-gray-500 text-xs mt-2">
-                    <div className="flex items-center gap-1">
-                      <User size={16} /> {q.userId.lastName}
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <Heart size={16} /> {q.votes?.length || 0}
-                    </div>
-                    <span>
-                      {new Date(q.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      ago
-                    </span>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {q.tags.length > 0 ? (
-                      q.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
-                        General
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    className="mt-3 flex items-center text-red-500 hover:text-red-700"
-                    onClick={() => handleDelete(q._id)}
-                  >
-                    <Trash2 size={16} className="mr-1" /> Delete
-                  </button>
+                {/* Render user */}
+                <div className="flex items-center gap-1">
+                  <User size={16} /> {q.userId ? q.userId.lastName : "Unknown"}
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-600 text-center">
-                No answered questions available.
-              </p>
-            )}
-          </div>
-        </section>
-      </main>
+
+                {/* Render votes */}
+                <div className="flex items-center gap-1">
+                  <Heart size={16} /> {q.votes ? q.votes.length : 0}
+                </div>
+
+                {/* Render time */}
+                <span>
+                  {new Date(q.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}{" "}
+                  ago
+                </span>
+
+                {/* Render tags */}
+                <div className="flex flex-wrap gap-2">
+                  {Array.isArray(q.tags) && q.tags.length > 0 ? (
+                    q.tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                      General
+                    </span>
+                  )}
+                </div>
+
+                {/* Delete Confirmation */}
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="mt-3 flex items-center text-red-500 hover:text-red-700">
+                      <Trash2 size={16} className="mr-1" /> Delete
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-white">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete this question?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-red-500 hover:bg-red-600"
+                        onClick={() => handleDelete(q._id)}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+              <br />
+            </>
+          ))
+        ) : (
+          <p>No answered questions available.</p>
+        )}
+      </section>
     </div>
   );
 };

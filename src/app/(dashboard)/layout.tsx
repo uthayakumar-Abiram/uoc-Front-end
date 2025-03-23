@@ -9,7 +9,7 @@ import { ChevronRight, Contact, Menu, Settings, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 // import Cookies from "js-cookie";
@@ -34,7 +34,16 @@ const pathSegments =
     //      </div>
     //    );
     //  }
+
+  useEffect(()=>{
+const user = JSON.parse(localStorage.getItem("user") || "{}");
+if (!user?._id) {
+  router.push("/login");
+  return;
+}
+  },[router])
   
+
     const showSidebar = pathname !== "/";
     if (!showSidebar ) {
       return <>{children}</>;

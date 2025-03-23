@@ -30,6 +30,7 @@ const Page = (props: Props) => {
           if (data.user) {
             localStorage.setItem("user",JSON.stringify(data.user));
             toast({
+              
                 title: "Login Success full"
               })
             router.push("/");
@@ -57,7 +58,7 @@ const Page = (props: Props) => {
         <div className={cn("flex flex-col gap-6")} {...props}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardTitle className="text-2xl text-purple-700 ">Ask Tech Login</CardTitle>
               <CardDescription>
                 Enter your email below to login to your account
               </CardDescription>
@@ -94,7 +95,10 @@ const Page = (props: Props) => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button
+                    type="submit"
+                    className="w-full bg-yellow-400 hover:bg-yellow-500"
+                  >
                     Login
                   </Button>
                 </div>
@@ -110,7 +114,7 @@ const Page = (props: Props) => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default Page
